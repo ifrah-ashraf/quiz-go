@@ -7,7 +7,6 @@ Welcome to the Quiz-Go project! This is a simple command-line quiz application b
 - Load quiz questions from a CSV file.
 - Ask questions in the terminal.
 - Increase score for correct answers.
-- Partial implementation of test functions.
 
 ## Getting Started
 
@@ -17,13 +16,15 @@ Welcome to the Quiz-Go project! This is a simple command-line quiz application b
 
 ### Installation
 
-1. Clone the repository:
+1. **Clone the repository:**
    ```bash
    git clone https://github.com/ifrah-ashraf/quiz-go.git
    cd quiz-go
+2. **Run the program:**
+   ```bash
+    go run main.go     
 
-2. Run the main program:
-  ```bash
-    go run main.go
-
-
+3. **To run the tests**
+   ```bash
+   go test
+   
