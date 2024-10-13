@@ -26,7 +26,4 @@ Welcome to the Quiz-Go project! This is a simple command-line quiz application b
   ```bash
     go run main.go
 
-3. To run the test:
-  ```bash
-    go test
 
