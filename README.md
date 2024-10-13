@@ -22,12 +22,11 @@ Welcome to the Quiz-Go project! This is a simple command-line quiz application b
    git clone https://github.com/ifrah-ashraf/quiz-go.git
    cd quiz-go
 
-go run main.go
+2. Run the main program:
+  ```bash
+    go run main.go
 
+3. To run the test:
+  ```bash
+    go test
 
-go test
-
-
-### Instructions:
-- Replace the CSV file path and any other specific details if necessary.
-- Save this content in your `README.md` file in the project root directory.
