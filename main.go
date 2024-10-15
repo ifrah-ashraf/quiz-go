@@ -2,11 +2,15 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"encoding/csv"
+	"flag"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"strconv"
+	"time"
 )
 
 func readCsvFile(filepath string) [][]string {
@@ -28,34 +32,46 @@ func readCsvFile(filepath string) [][]string {
 	return records
 }
 
-func quizTest(records [][]string) (int, error) {
-	scanner := bufio.NewScanner(os.Stdin)
+// the io.Reader (third param in func quiztest) interface give proper control on the type of input we are passing to the quiz function such as -:
+
+//Files: The *os.File type (like os.Stdin) implements io.Reader.
+//Strings: strings.NewReader wraps a string to implement io.Reader.
+//Network Connections: net.Conn implements io.Reader for reading data from network connections.
+
+func quizTest(ctx context.Context, records [][]string, input io.Reader) (int, error) {
+	scanner := bufio.NewScanner(input)
 	var result int
 	score := 0
 
 	for _, row := range records {
 		quest := row[0]
-
 		ans := row[1]
 
-		parsedAns, err := strconv.Atoi(ans)
-		if err != nil {
-			fmt.Println(err)
-		}
+		select {
+		case <-ctx.Done():
+			return score, ctx.Err()
 
-		fmt.Printf("what is %s ?\n", quest)
+		default:
 
-		scanner.Scan()
-		input := scanner.Text()
+			parsedAns, err := strconv.Atoi(ans)
+			if err != nil {
+				fmt.Println(err)
+			}
 
-		result, err = strconv.Atoi(input)
-		if err != nil {
-			fmt.Println("Invalid input, please enter a valid number.")
-			continue
-		}
+			fmt.Printf("what is %s ?\n", quest)
 
-		if result == parsedAns {
-			score++
+			scanner.Scan()
+			input := scanner.Text()
+
+			result, err = strconv.Atoi(input)
+			if err != nil {
+				fmt.Println("Invalid input, please enter a valid number.")
+				continue
+			}
+
+			if result == parsedAns {
+				score++
+			}
 		}
 
 	}
@@ -65,7 +81,16 @@ func quizTest(records [][]string) (int, error) {
 func main() {
 	records := readCsvFile("./problems.csv")
 
-	score, err := quizTest(records)
+	timePtr := flag.Int("time", 2, "a timer for quiz")
+
+	flag.Parse()
+
+	fmt.Println(time.Second)
+
+	ctx, cancelFunc := context.WithTimeout(context.Background(), time.Duration(*timePtr)*time.Second)
+	defer cancelFunc()
+
+	score, err := quizTest(ctx, records, os.Stdin)
 
 	if err != nil {
 		fmt.Println(err)
@@ -76,3 +101,8 @@ func main() {
 
 //here i used bufio to handle the input gracefully like if the user give wrong input (some gibbrish string) it will prompt
 //the error message and clear the buffer for the next input more better that scanf
+
+//how to use flag ?
+// flag declared should have format like flag.format_type(name , value , description)
+
+// the context

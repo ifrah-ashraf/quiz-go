@@ -1,26 +1,53 @@
 package main
 
 import (
+	"context"
+	"strings"
 	"testing"
+	"time"
 )
 
-type value struct {
-	input    [][]string
-	expected int
+var testRecords = [][]string{
+	{"5+5", "10"},
+	{"11+2", "13"},
+	{"13+2", "15"},
+	{"6*7", "42"},
 }
 
-var values = []value{
-	{input: [][]string{{"5+5", "10"}}, expected: 1},
-}
+func TestQuizTest(t *testing.T) {
+	ctx, cancelFunc := context.WithTimeout(context.Background(), 2*time.Second)
 
-func TestQuiz(t *testing.T) {
+	inputData := "10\n13\n15\n42"
 
-	got, err := quizTest(values[0].input)
-	want := 1
-	var wantErr error
+	defer cancelFunc()
 
-	if got != want || wantErr != err {
-		t.Errorf("quizTest() = %d, %v; want %d, %v", got, err, want, wantErr)
+	val := strings.NewReader(inputData)
+
+	got, err := quizTest(ctx, testRecords, val)
+
+	want := 4
+
+	if got != want || err != nil {
+		t.Errorf("Expected score %d got score %d", want, got)
 	}
 
+}
+
+func TestInvalidValue(t *testing.T) {
+
+	ctx, cancelFunc := context.WithTimeout(context.Background(), 2*time.Second)
+
+	inputData := "xyz\npqr\nlp\npop"
+
+	defer cancelFunc()
+
+	val := strings.NewReader(inputData)
+
+	got, err := quizTest(ctx, testRecords, val)
+
+	want := 0
+
+	if got != want || err != nil {
+		t.Errorf("Expected score %d got score %d", want, got)
+	}
 }
