@@ -85,7 +85,7 @@ func main() {
 
 	flag.Parse()
 
-	fmt.Println(time.Second)
+	fmt.Printf("Your time for quiz is %v sec\n", *timePtr)
 
 	ctx, cancelFunc := context.WithTimeout(context.Background(), time.Duration(*timePtr)*time.Second)
 	defer cancelFunc()
